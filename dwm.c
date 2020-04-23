@@ -1553,8 +1553,9 @@ void
 runAutostart(void) 
 {
 	system("export _JAVA_AWT_WM_NONREPARENTING=1");
+	system("wmname LG3D &");
 	system("export STATUSBAR=\"dwmstatus\"; killall dwmstatus; dwmstatus 2>&1 & >/dev/null");
-	system("~/.dwm/./autostart_blocking.sh");
+	system("~/.dwm/./autostart_blocking.sh &");
 	system("~/.dwm/./autostart.sh &");
 }
 

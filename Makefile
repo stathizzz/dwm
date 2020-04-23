@@ -42,9 +42,9 @@ install: all
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
 	mkdir -p ${DESTDIR}${PREFIX}/share/dwm
 	cp -f dmenurecord ${DESTDIR}${PREFIX}/share/dwm
-	chmod 644 ${DESTDIR}${PREFIX}/share/dwm/dmenurecord
+	chmod 755 ${DESTDIR}${PREFIX}/share/dwm/dmenurecord
 	cp -f dmenuunicode ${DESTDIR}${PREFIX}/share/dwm
-	chmod 644 ${DESTDIR}${PREFIX}/share/dwm/dmenuunicode
+	chmod 755 ${DESTDIR}${PREFIX}/share/dwm/dmenuunicode
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
 		${DESTDIR}${PREFIX}/share/dwm/dmenurecord\

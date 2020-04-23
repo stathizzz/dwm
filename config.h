@@ -37,8 +37,8 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "clion",     NULL,       NULL,       1 << 1,            1,           -1 },
 	{ "Firefox",     NULL,       NULL,       1 << 0,            0,           -1 },
-	{0,     NULL,        "Wicd Network Manager",       1 << 4,            0,           -1 },
-	{0,     NULL,        "VeraCrypt",       1 << 5,            1,           -1 },
+	{0,     NULL,        "Network Manager",       1 << 4,            0,           -1 },
+	{"Veracrypt",	NULL,        NULL,       1 << 5,            1,           -1 },
 	{0,     NULL,        "VI File Manager",       1 << 2,            0,           -1 },
 	{0,     NULL,       "Task Manager",       1 << 3,            0,           -1 },
 	{0,     NULL,       "MyCMS",       1 << 6,            0,           -1 },
@@ -83,9 +83,10 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbordercolor, "-sf", selfgcolor, NULL };
-static const char *termcmd[]  = { "st", NULL };
-static const char scratchpadname[] = "Floating Terminal";
-static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "160x48", NULL };
+static const char *termcmd[] = {"st", NULL};
+static const char scratchpadname[] = "Floating Panel";
+//static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "160x48", NULL };
+static const char *scratchpadcmd[] = { "urxvt", "-title", (const char *)scratchpadname, "-g", "160x48", NULL };
 
 #include <X11/XF86keysym.h>
 #include "shiftview.c"
@@ -94,7 +95,7 @@ static Key keys[] = {
 	STACKKEYS(MODKEY,                          focus)
 	STACKKEYS(MODKEY|ShiftMask,                push)
 	{ MODKEY|ShiftMask,		XK_Escape,	spawn,	SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Close Xorg?\")\" = Yes ] && killall Xorg") },
-	{ MODKEY,			XK_grave,	spawn,	SHCMD("$TERMINAL -e $FILEMGR") },
+	{ MODKEY,			XK_grave,	spawn,	SHCMD("/usr/local/share/dwm/./dmenuunicode") },
 	TAGKEYS(			XK_1,		0)
 	TAGKEYS(			XK_2,		1)
 	TAGKEYS(			XK_3,		2)
@@ -153,20 +154,21 @@ static Key keys[] = {
 	{ MODKEY,			XK_v,		spawn,		SHCMD("$TERMINAL -e $EDITOR") },
 	{ MODKEY|ShiftMask,		XK_v,		spawn,		SHCMD("feh --bg-scale --randomize -r $WALLPAPER_PATH") },
 //	{ MODKEY,       		XK_r,		spawn,		SHCMD("ffmpeg -f video4linux2 -input_format yuyv422 -video_size 1280x720 -i /dev/video0 -f alsa -i default \"/mnt/webcam_videos/$(date).mp4\"") },
-	{ MODKEY,       		XK_r,		spawn,		SHCMD("/usr/local/share/dwm/dmenurecord") },
+	{ MODKEY,       		XK_r,		spawn,		SHCMD("/usr/local/share/dwm/./dmenurecord") },
 //	{ MODKEY|ShiftMask,		XK_r,		spawn,  	SHCMD("ffmpeg -y -framerate 30 -f x11grab -video_size 1920x1080 -i :0.0 -f pulse -i default \"/mnt/screen_videos/$(date).mp4\"") },
 	{ MODKEY|ShiftMask,		XK_r,		spawn,  	SHCMD("/usr/local/share/dwm/dmenurecord kill") },
 	{ MODKEY,			XK_b,		togglebar,	{0} },
-	{ MODKEY,			XK_n,		spawn,		SHCMD("wicd-gtk") },
+	{ MODKEY|ShiftMask,		XK_b,		spawn,		SHCMD("groff -mom $THESIS_PATH -Tpdf | zathura -") },
+	{ MODKEY,			XK_n,		spawn,		SHCMD("nmtui") },
 	{ MODKEY|ShiftMask,		XK_n,		spawn,		SHCMD("$TERMINAL -e \"echo 'LAST' && (last -a | grep -i 'still logged in' ) && echo 'WHO' && who && echo 'W' && w && echo 'NETSTAT' &&  netstat -tnpa | grep '*ssh'\"") },
-//	{ MODKEY,			XK_m,		spawn,		SHCMD("") },
+	{ MODKEY,			XK_m,		spawn,		SHCMD("$TERMINAL -e $FILEMGR") },
 //	{ MODKEY,			XK_comma,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_period,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_forwardslash,spawn,		SHCMD("") },
 	{ MODKEY,			XK_Page_Up,	shiftview,	{ .i = -1 } },
 	{ MODKEY,			XK_Page_Down,	shiftview,	{ .i = 1 } },
 //	{ MODKEY,			XK_Insert,	spawn,		SHCMD("notify-send \"📋 Clipboard contents:\" \"$(xclip -o -selection clipboard)\"") },
-	{ MODKEY,			XK_F1,		spawn,		SHCMD("groff -mom $THESIS_PATH -Tpdf | zathura -") },
+//	{ MODKEY,			XK_F1,		spawn,		SHCMD("") },
 // 	{ MODKEY,			XK_F2,		spawn,		SHCMD("") }, 
 //	{ MODKEY,			XK_F3,		spawn,		SHCMD("displayselect") },
 //	{ MODKEY,			XK_F5,		xrdb,		{.v = NULL } },

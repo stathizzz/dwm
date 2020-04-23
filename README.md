@@ -20,6 +20,7 @@ Patches:
 - gaps around windows and bar
 - dwmc
 - reads xresources colors
+- autostart programs at boot through script files 
 
 Layouts:
 - Fibonacci

@@ -14,6 +14,7 @@ static const int vertpad            = 0;       /* vertical padding of bar */
 static const int sidepad            = 0;       /* horizontal padding of bar */
 static const char *fonts[]          = { "monospace:size=10", "JoyPixels:pixelsize=10:antialias=true:autohint=true"  };
 static char dmenufont[]       = "monospace:size=10";
+static const char urgbordercolor[]  = "#ff0000";
 static char normbgcolor[]           = "#222222";
 static char normbordercolor[]       = "#444444";
 static char normfgcolor[]           = "#bbbbbb";
@@ -86,7 +87,7 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 static const char *termcmd[] = {"st", NULL};
 static const char scratchpadname[] = "Floating Panel";
 //static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "160x48", NULL };
-static const char *scratchpadcmd[] = { "urxvt", "-title", (const char *)scratchpadname, "-g", "160x48", NULL };
+static const char *scratchpadcmd[] = { "urxvt", "-T", (const char *)scratchpadname, "-g", "160x48", NULL };
 
 #include <X11/XF86keysym.h>
 #include "shiftview.c"
@@ -132,13 +133,13 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_k,		spawn,  	SHCMD("killall -INT ffmpeg") },
 	{ MODKEY,			XK_a,		spawn,		SHCMD("pavucontrol") },
 	{ MODKEY,			XK_s,		togglesticky,	{0} },
-	{ MODKEY|ShiftMask,		XK_s,		spawn,  	SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Suspend computer?\")\" = Yes ] && sudo suspend") },
+	{ MODKEY|ShiftMask,		XK_s,		spawn,  	SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Suspend computer?\")\" = Yes ] && systemctl suspend") },
 	{ MODKEY,			XK_d,		spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,		XK_d,		togglegaps,	{0} },
 	{ MODKEY,			XK_f,		togglefullscr,	{0} },
 	{ MODKEY,			XK_g,		shiftview,	{ .i = -1 } },
 	{ MODKEY,			XK_h,		setmfact,	{.f = -0.05} },
-	{ MODKEY|ShiftMask,		XK_h,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && sudo hibernate") },
+	{ MODKEY|ShiftMask,		XK_h,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && systemctl hibernate") },
 	{ MODKEY,			XK_l,		setmfact,      	{.f = +0.05} },
 	{ MODKEY,			XK_semicolon,	shiftview,	{ .i = +1 } },
 	{ MODKEY,			XK_apostrophe,	zoom,		{0} },
@@ -201,7 +202,7 @@ static Key keys[] = {
 //	{ 0, XF86XK_AudioMedia,		spawn,		SHCMD("$TERMINAL -e ncmpcpp") },
 	{ 0, XF86XK_PowerOff,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Shutdown computer?\")\" = Yes ] && shutdown now") },
 	{ 0, XF86XK_Calculator,		spawn,		SHCMD("$TERMINAL -e $CALCULATOR -l") },
-	{ 0, XF86XK_Sleep,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && sudo hibernate") },
+	{ 0, XF86XK_Sleep,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && hibernate") },
 	{ 0, XF86XK_WWW,		spawn,		SHCMD("$BROWSER") },
 	{ 0, XF86XK_DOS,		spawn,		SHCMD("$TERMINAL") },
 	{ 0, XF86XK_ScreenSaver,	spawn,		SHCMD("slock & xset dpms force off;") },

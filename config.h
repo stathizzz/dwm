@@ -14,19 +14,8 @@ static const int vertpad            = 0;       /* vertical padding of bar */
 static const int sidepad            = 0;       /* horizontal padding of bar */
 static const char *fonts[]          = { "monospace:size=10", "JoyPixels:pixelsize=10:antialias=true:autohint=true"  };
 static char dmenufont[]       = "monospace:size=10";
+
 #include "colors-wal-dwm.h"
-//static const char urgbordercolor[]  = "#ff0000";
-//static char normbgcolor[]           = "#222222";
-//static char normbordercolor[]       = "#444444";
-//static char normfgcolor[]           = "#bbbbbb";
-//static char selfgcolor[]            = "#eeeeee";
-//static char selbordercolor[]        = "#005577";
-//static char selbgcolor[]            = "#005577";
-//static char *colors[][3] = {
-//       /*               fg           bg           border   */
-//       [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
-//       [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
-//};
 
 /* tagging */
 static const char *tags[] = { "1: Web", "2: Develop", "3: MyCMS", "4: Tools", "5: Crypt", "6: Music", "7: Videos", "8", "9", "0" };

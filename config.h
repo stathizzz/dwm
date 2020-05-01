@@ -14,21 +14,22 @@ static const int vertpad            = 0;       /* vertical padding of bar */
 static const int sidepad            = 0;       /* horizontal padding of bar */
 static const char *fonts[]          = { "monospace:size=10", "JoyPixels:pixelsize=10:antialias=true:autohint=true"  };
 static char dmenufont[]       = "monospace:size=10";
-static const char urgbordercolor[]  = "#ff0000";
-static char normbgcolor[]           = "#222222";
-static char normbordercolor[]       = "#444444";
-static char normfgcolor[]           = "#bbbbbb";
-static char selfgcolor[]            = "#eeeeee";
-static char selbordercolor[]        = "#005577";
-static char selbgcolor[]            = "#005577";
-static char *colors[][3] = {
-       /*               fg           bg           border   */
-       [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
-       [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
-};
+#include "colors-wal-dwm.h"
+//static const char urgbordercolor[]  = "#ff0000";
+//static char normbgcolor[]           = "#222222";
+//static char normbordercolor[]       = "#444444";
+//static char normfgcolor[]           = "#bbbbbb";
+//static char selfgcolor[]            = "#eeeeee";
+//static char selbordercolor[]        = "#005577";
+//static char selbgcolor[]            = "#005577";
+//static char *colors[][3] = {
+//       /*               fg           bg           border   */
+//       [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
+//       [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
+//};
 
 /* tagging */
-static const char *tags[] = { "1: Web", "2: Develop", "3: Files", "4: Tasks", "5: Network", "6: Crypt", "7: MyCMS", "8: Music", "9: Videos" };
+static const char *tags[] = { "1: Web", "2: Develop", "3: MyCMS", "4: Tools", "5: Crypt", "6: Music", "7: Videos", "8", "9", "0" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -36,15 +37,17 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "clion",     NULL,       NULL,       1 << 1,            1,           -1 },
 	{ "Firefox",     NULL,       NULL,       1 << 0,            0,           -1 },
-	{NULL,     NULL,        "Network Manager",       1 << 4,            0,           -1 },
-	{"Veracrypt",	NULL,        NULL,       1 << 5,            1,           -1 },
-	{NULL,     NULL,        "VI File Manager",       1 << 2,            0,           -1 },
+	{ NULL,     "qutebrowser",       NULL,       1 << 0,            0,           -1 },
+	{ "clion",     NULL,       NULL,       1 << 1,            1,           -1 },
+	{NULL,     NULL,       "MyCMS",       1 << 2,            0,           -1 },
+	{NULL,     NULL,        "VI File Manager",       1 << 3,            0,           -1 },
 	{NULL,     NULL,       "Task Manager",       1 << 3,            0,           -1 },
-	{NULL,     NULL,       "MyCMS",       1 << 6,            0,           -1 },
-	{NULL ,    NULL,       "Music Library",       1 << 7,            0,           -1 },
-	{ "Gimp",     NULL,       NULL,       1 << 8,            0,           -1 },
+	{NULL,     NULL,        "Network Manager",       1 << 3,            0,           -1 },
+	{NULL,     NULL,        "SSH Monitor",       1 << 3,            0,           -1 },
+	{"Veracrypt",	NULL,        NULL,       1 << 4,            1,           -1 },
+	{NULL ,    NULL,       "Music Library",       1 << 5,            0,           -1 },
+	{ "Gimp",     NULL,       NULL,       1 << 6,            0,           -1 },
 };
 
 /* layout(s) */
@@ -85,6 +88,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbordercolor, "-sf", selfgcolor, NULL };
+//static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", norm_bg, "-nf", norm_fg, "-sb", sel_bg, "-sf", sel_fg, NULL };
 static const char *termcmd[] = {"st", NULL};
 static const char scratchpadname[] = "Floating Panel";
 //static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "160x48", NULL };
@@ -109,10 +113,10 @@ static Key keys[] = {
 	TAGKEYS(			XK_9,		8)
 	{ MODKEY,			XK_0,		view,		{.ui = ~0 } },
 	{ MODKEY|ShiftMask,		XK_0,		tag,		{.ui = ~0 } },
-	{ MODKEY,			XK_minus,	spawn,		SHCMD("pactl set-sink-volume 0 -10%") },
-	{ MODKEY|ShiftMask,		XK_minus,	spawn,		SHCMD("pactl set-sink-volume 0 -25%") },
-	{ MODKEY,			XK_equal,	spawn,		SHCMD("pactl set-sink-volume 0 +10%") },
-	{ MODKEY|ShiftMask,		XK_equal,	spawn,		SHCMD("pactl set-sink-volume 0 +25%") },
+	{ MODKEY,			XK_minus,	spawn,		SHCMD("amixer sset Master 10%-") },
+	{ MODKEY|ShiftMask,		XK_minus,	spawn,		SHCMD("amixer sset Master 25%-") },
+	{ MODKEY,			XK_equal,	spawn,		SHCMD("amixer sset Master 10%+") },
+	{ MODKEY|ShiftMask,		XK_equal,	spawn,		SHCMD("amixer sset Master 25%+") },
 	{ MODKEY|ShiftMask,		XK_BackSpace,	spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Reboot computer?\")\" = Yes ] && reboot") },
 	{ MODKEY,			XK_Tab,		view,		{0} },
 	{ MODKEY,			XK_q,		killclient,	{0} },
@@ -126,10 +130,10 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_o,		incnmaster,     {.i = -1 } },
 	{ MODKEY,			XK_p,			spawn,		SHCMD("kill -STOP `pidof vlc`") },
 	{ MODKEY|ShiftMask,		XK_p,			spawn,		SHCMD("kill -CONT `pidof vlc`") },
-//	{ MODKEY,			XK_bracketleft,		spawn,		SHCMD("mpc seek -10") },
-//	{ MODKEY|ShiftMask,		XK_bracketleft,		spawn,		SHCMD("mpc seek -120") },
-//	{ MODKEY,			XK_bracketright,	spawn,		SHCMD("mpc seek +10") },
-//	{ MODKEY|ShiftMask,		XK_bracketright,	spawn,		SHCMD("mpc seek +120") },
+	{ MODKEY,			XK_bracketleft,		spawn,		SHCMD("mpc seek -10") },
+	{ MODKEY|ShiftMask,		XK_bracketleft,		spawn,		SHCMD("mpc seek -120") },
+	{ MODKEY,			XK_bracketright,	spawn,		SHCMD("mpc seek +10") },
+	{ MODKEY|ShiftMask,		XK_bracketright,	spawn,		SHCMD("mpc seek +120") },
 	{ MODKEY,			XK_backslash,		view,		{0} },
 	{ MODKEY|ShiftMask,		XK_k,		spawn,  	SHCMD("killall -INT ffmpeg") },
 	{ MODKEY,			XK_a,		spawn,		SHCMD("pavucontrol") },
@@ -161,15 +165,16 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_r,		spawn,  	SHCMD("/usr/local/share/dwm/dmenurecord kill") },
 	{ MODKEY,			XK_b,		togglebar,	{0} },
 	{ MODKEY|ShiftMask,		XK_b,		spawn,		SHCMD("groff -mom $THESIS_PATH -Tpdf | zathura -") },
-	{ MODKEY,			XK_n,		spawn,		SHCMD("nmtui") },
-	{ MODKEY|ShiftMask,		XK_n,		spawn,		SHCMD("$TERMINAL -e \"echo 'LAST' && (last -a | grep -i 'still logged in' ) && echo 'WHO' && who && echo 'W' && w && echo 'NETSTAT' &&  netstat -tnpa | grep '*ssh'\"") },
+	{ MODKEY,			XK_n,		spawn,		SHCMD("xterm -e nmtui") },
+	{ MODKEY|ShiftMask,		XK_n,		spawn,		SHCMD("$TERMINAL -e watch -n4 \"echo LAST && last -a |grep 'logged in' && echo WHO && who && echo W && w && echo NETSTAT && sudo netstat-nat\"") },
+	
 	{ MODKEY,			XK_m,		spawn,		SHCMD("$TERMINAL -e $FILEMGR") },
 //	{ MODKEY,			XK_comma,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_period,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_forwardslash,spawn,		SHCMD("") },
 	{ MODKEY,			XK_Page_Up,	shiftview,	{ .i = -1 } },
 	{ MODKEY,			XK_Page_Down,	shiftview,	{ .i = 1 } },
-//	{ MODKEY,			XK_Insert,	spawn,		SHCMD("notify-send \"📋 Clipboard contents:\" \"$(xclip -o -selection clipboard)\"") },
+	{ MODKEY,			XK_Insert,	spawn,		SHCMD("notify-send \"📋 Clipboard contents:\" \"$(xclip -o -selection clipboard)\"") },
 //	{ MODKEY,			XK_F1,		spawn,		SHCMD("") },
 // 	{ MODKEY,			XK_F2,		spawn,		SHCMD("") }, 
 //	{ MODKEY,			XK_F3,		spawn,		SHCMD("displayselect") },
@@ -186,27 +191,25 @@ static Key keys[] = {
 
 	{ 0,				XK_Print,	spawn,		SHCMD("maim $SCREENSHOT_DESKTOP_PATH/$(date '+%Y.%m.%d-%H%M-%S').png") },
 	{ ShiftMask,			XK_Print,	spawn,		SHCMD("maim -i $(xdotool getactivewindow) $SCREENSHOT_ACTIVEWINDOW_PATH/$(date '+%Y.%m.%d-%H%M-%S').png") },
-//	{ MODKEY,			XK_Print,	spawn,		SHCMD("") },
-//	{ MODKEY|ShiftMask,		XK_Print,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_Delete,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_Scroll_Lock,	spawn,		SHCMD("killall screenkey || screenkey &") },//screencast your keystrokes
-	{ 0, XF86XK_AudioMute,		spawn,		SHCMD("pactl set-sink-volume 0 0") },
-	{ 0, XF86XK_AudioRaiseVolume,	spawn,		SHCMD("pactl set-sink-volume 0 +10%") },
-	{ 0, XF86XK_AudioLowerVolume,	spawn,		SHCMD("pactl set-sink-volume 0 -10%") },
-//	{ 0, XF86XK_AudioPrev,		spawn,		SHCMD("mpc prev") },
-//	{ 0, XF86XK_AudioNext,		spawn,		SHCMD("mpc next") },
-//	{ 0, XF86XK_AudioPause,		spawn,		SHCMD("mpc pause") },
-//	{ 0, XF86XK_AudioPlay,		spawn,		SHCMD("mpc play") },
-//	{ 0, XF86XK_AudioStop,		spawn,		SHCMD("mpc stop") },
-//	{ 0, XF86XK_AudioRewind,	spawn,		SHCMD("mpc seek -10") },
-//	{ 0, XF86XK_AudioForward,	spawn,		SHCMD("mpc seek +10") },
-//	{ 0, XF86XK_AudioMedia,		spawn,		SHCMD("$TERMINAL -e ncmpcpp") },
+	{ 0, XF86XK_AudioMute,		spawn,		SHCMD("amixer sset Master 0%") },
+	{ 0, XF86XK_AudioRaiseVolume,	spawn,		SHCMD("amixer -q sset Master 10%+") },
+	{ 0, XF86XK_AudioLowerVolume,	spawn,		SHCMD("amixer -q sset Master 10%-") },
+	{ 0, XF86XK_AudioPrev,		spawn,		SHCMD("mpc prev") },
+	{ 0, XF86XK_AudioNext,		spawn,		SHCMD("mpc next") },
+	{ 0, XF86XK_AudioPause,		spawn,		SHCMD("mpc toggle") },
+	{ 0, XF86XK_AudioPlay,		spawn,		SHCMD("mpc toggle") },
+	{ 0, XF86XK_AudioStop,		spawn,		SHCMD("mpc stop") },
+	{ 0, XF86XK_AudioRewind,	spawn,		SHCMD("mpc seek -10") },
+	{ 0, XF86XK_AudioForward,	spawn,		SHCMD("mpc seek +10") },
+	{ 0, XF86XK_AudioMedia,		spawn,		SHCMD("$TERMINAL -e ncmpcpp") },
 	{ 0, XF86XK_PowerOff,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Shutdown computer?\")\" = Yes ] && shutdown now") },
 	{ 0, XF86XK_Calculator,		spawn,		SHCMD("$TERMINAL -e $CALCULATOR -l") },
 	{ 0, XF86XK_Sleep,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && hibernate") },
 	{ 0, XF86XK_WWW,		spawn,		SHCMD("$BROWSER") },
 	{ 0, XF86XK_DOS,		spawn,		SHCMD("$TERMINAL") },
-	{ 0, XF86XK_ScreenSaver,	spawn,		SHCMD("slock & xset dpms force off;") },
+	{ 0, XF86XK_ScreenSaver,	spawn,		SHCMD("slock & xset dpms force off") },
 	{ 0, XF86XK_TaskPane,		spawn,		SHCMD("$TERMINAL -e htop") },
 	{ 0, XF86XK_Mail,		spawn,		SHCMD("$TERMINAL -e $MAILCLIENT") },
 	{ 0, XF86XK_MyComputer,		spawn,		SHCMD("$TERMINAL -e $FILEMGR /") },
@@ -215,8 +218,8 @@ static Key keys[] = {
 //	{ 0, XF86XK_TouchpadToggle,	spawn,		SHCMD("(synclient | grep 'TouchpadOff.*1' && synclient TouchpadOff=0) || synclient TouchpadOff=1") },
 //	{ 0, XF86XK_TouchpadOff,	spawn,		SHCMD("synclient TouchpadOff=1") },
 //	{ 0, XF86XK_TouchpadOn,		spawn,		SHCMD("synclient TouchpadOff=0") },
-//	{ 0, XF86XK_MonBrightnessUp,	spawn,		SHCMD("xbacklight -inc 15") },
-//	{ 0, XF86XK_MonBrightnessDown,	spawn,		SHCMD("xbacklight -dec 15") },
+	{ 0, XF86XK_MonBrightnessUp,	spawn,		SHCMD("xbacklight -inc 15") },
+	{ 0, XF86XK_MonBrightnessDown,	spawn,		SHCMD("xbacklight -dec 15") },
 	//Original bindings	
 	/* { MODKEY,                       XK_comma,  focusmon,       {.i = -1 } }, */
 	/* { MODKEY,                       XK_period, focusmon,       {.i = +1 } }, */
@@ -247,7 +250,7 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          SHCMD("$TERMINAL -e ./statusbarinfo") },
+	{ ClkStatusText,        0,              Button2,        spawn,          {0} },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },

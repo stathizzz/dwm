@@ -15,7 +15,35 @@ static const int sidepad            = 0;       /* horizontal padding of bar */
 static const char *fonts[]          = { "monospace:size=10", "JoyPixels:pixelsize=10:antialias=true:autohint=true"  };
 static char dmenufont[]       = "monospace:size=10";
 
-#include "colors-wal-dwm.h"
+//#include "colors-wal-dwm.h"
+
+static char normfgcolor[] = "#bbbbbb";
+//"{color15}";
+static char normbgcolor[] = "#222222";
+//"{color0}";
+static char normbordercolor[] = "#444444";
+//"{color8}";
+
+static char selfgcolor[] = "#eeeeee";
+//"{color15}";
+static char selbgcolor[] = "#005577";
+//"{color2}";
+static char selbordercolor[] = "#005577";
+//"{color15}";
+
+static const char urgfgcolor[] = "#ff0000";
+//"{color15}";
+static const char urgbgcolor[] = "#ff0000";
+//"{color1}";
+static const char urgbordercolor[] = "#ff0000";
+//"{color1}";
+
+static char *colors[][3]      = {{
+    /*               fg           bg         border                         */
+    [SchemeNorm] = {{ normfgcolor,     normbgcolor,   normbordercolor }}, // unfocused wins
+    [SchemeSel]  = {{ selfgcolor,      selbgcolor,    selbordercolor }},  // the focused win
+//    [SchemeUrg] =  {{ urgfgcolor,      urgbgcolor,    urgbordercolor }},
+}};
 
 /* tagging */
 static const char *tags[] = { "1: Web", "2: Develop", "3: MyCMS", "4: Tools", "5: Crypt", "6: Music", "7: Videos", "8", "9", "0" };
@@ -27,7 +55,7 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Firefox",     NULL,       NULL,       1 << 0,            0,           -1 },
-	{ NULL,     "qutebrowser",       NULL,       1 << 0,            0,           -1 },
+//	{ NULL,     "qutebrowser",       NULL,       1 << 0,            0,           -1 },
 	{ "clion",     NULL,       NULL,       1 << 1,            1,           -1 },
 	{NULL,     NULL,       "MyCMS",       1 << 2,            0,           -1 },
 	{NULL,     NULL,        "VI File Manager",       1 << 3,            0,           -1 },

@@ -15,35 +15,20 @@ static const int sidepad            = 0;       /* horizontal padding of bar */
 static const char *fonts[]          = { "monospace:size=10", "JoyPixels:pixelsize=10:antialias=true:autohint=true"  };
 static char dmenufont[]       = "monospace:size=10";
 
-//#include "colors-wal-dwm.h"
+/* input the Xresource file you want to connect dwm with */
+static const char *hardcoded_resm = "<Full path to Xresources colors file>"; //optional
 
-static char normfgcolor[] = "#bbbbbb";
-//"{color15}";
-static char normbgcolor[] = "#222222";
-//"{color0}";
-static char normbordercolor[] = "#444444";
-//"{color8}";
+static char color15[] = "#000000"; //norm_fg, sel_fg, sel_border
+static char color0[] = "#ffffff"; //norm_bg
+static char color8[] = "#ffffff"; //norm_border
+static char color1[] = "#ffffff"; //sel_bg color
 
-static char selfgcolor[] = "#eeeeee";
-//"{color15}";
-static char selbgcolor[] = "#005577";
-//"{color2}";
-static char selbordercolor[] = "#005577";
-//"{color15}";
-
-static const char urgfgcolor[] = "#ff0000";
-//"{color15}";
-static const char urgbgcolor[] = "#ff0000";
-//"{color1}";
-static const char urgbordercolor[] = "#ff0000";
-//"{color1}";
-
-static char *colors[][3]      = {{
+static char *colors[][3]      = {
     /*               fg           bg         border                         */
-    [SchemeNorm] = {{ normfgcolor,     normbgcolor,   normbordercolor }}, // unfocused wins
-    [SchemeSel]  = {{ selfgcolor,      selbgcolor,    selbordercolor }},  // the focused win
-//    [SchemeUrg] =  {{ urgfgcolor,      urgbgcolor,    urgbordercolor }},
-}};
+    [SchemeNorm] = { color15,     color0,   color8}, // unfocused wins
+    [SchemeSel]  = { color15,      color1,    color15},  // the focused win
+};
+
 
 /* tagging */
 static const char *tags[] = { "1: Web", "2: Develop", "3: MyCMS", "4: Tools", "5: Crypt", "6: Music", "7: Videos", "8", "9", "0" };
@@ -54,8 +39,8 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Firefox",     NULL,       NULL,       1 << 0,            0,           -1 },
-//	{ NULL,     "qutebrowser",       NULL,       1 << 0,            0,           -1 },
+//	{ "Firefox",     NULL,       NULL,       1 << 0,            0,           -1 },
+	{ "MY_WEB_BROWSER",	NULL,	 NULL,       1 << 0,            0,           -1 },
 	{ "clion",     NULL,       NULL,       1 << 1,            1,           -1 },
 	{NULL,     NULL,       "MyCMS",       1 << 2,            0,           -1 },
 	{NULL,     NULL,        "VI File Manager",       1 << 3,            0,           -1 },
@@ -104,8 +89,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbordercolor, "-sf", selfgcolor, NULL };
-//static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", norm_bg, "-nf", norm_fg, "-sb", sel_bg, "-sf", sel_fg, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", color0, "-nf", color15, "-sb", color1, "-sf", color15, NULL };
 static const char *termcmd[] = {"st", NULL};
 static const char scratchpadname[] = "Floating Panel";
 //static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "160x48", NULL };
@@ -175,7 +159,7 @@ static Key keys[] = {
 	{ MODKEY,			XK_c,		spawn,		SHCMD("mpv --no-cache --no-osc --no-input-default-bindings --input-conf=/dev/null --title=\"webcam live\"  $(ls /dev/video[0,2,4,6,8] | tail -n 1)") }, 
 	{ MODKEY|ShiftMask,		XK_c,		spawn,		SHCMD("pkill -f \"webcam live\"") }, 
 	{ MODKEY,			XK_v,		spawn,		SHCMD("$TERMINAL -e $EDITOR") },
-	{ MODKEY|ShiftMask,		XK_v,		spawn,		SHCMD("feh --bg-scale --randomize -r $WALLPAPER_PATH") },
+	{ MODKEY|ShiftMask,		XK_v,		spawn,		SHCMD("wal -i $WALLPAPER_PATH && xsetroot -name \"fsignal:xrdb\"") },
 //	{ MODKEY,       		XK_r,		spawn,		SHCMD("ffmpeg -f video4linux2 -input_format yuyv422 -video_size 1280x720 -i /dev/video0 -f alsa -i default \"/mnt/webcam_videos/$(date).mp4\"") },
 	{ MODKEY,       		XK_r,		spawn,		SHCMD("/usr/local/share/dwm/./dmenurecord") },
 //	{ MODKEY|ShiftMask,		XK_r,		spawn,  	SHCMD("ffmpeg -y -framerate 30 -f x11grab -video_size 1920x1080 -i :0.0 -f pulse -i default \"/mnt/screen_videos/$(date).mp4\"") },
@@ -183,9 +167,11 @@ static Key keys[] = {
 	{ MODKEY,			XK_b,		togglebar,	{0} },
 	{ MODKEY|ShiftMask,		XK_b,		spawn,		SHCMD("groff -mom $THESIS_PATH -Tpdf | zathura -") },
 	{ MODKEY,			XK_n,		spawn,		SHCMD("xterm -e nmtui") },
-	{ MODKEY|ShiftMask,		XK_n,		spawn,		SHCMD("$TERMINAL -e watch -n4 \"echo LAST && last -a |grep 'logged in' && echo WHO && who && echo W && w && echo NETSTAT && sudo netstat-nat\"") },
+	{ MODKEY|ShiftMask,		XK_n,		spawn,		SHCMD("$TERMINAL -e watch -n4 \"echo LAST && last -a |grep 'logged in' && echo WHO && who && echo W && w\"") },
 	
 	{ MODKEY,			XK_m,		spawn,		SHCMD("$TERMINAL -e $FILEMGR") },
+	{ MODKEY|ShiftMask,		XK_m,		spawn,		SHCMD("$TORRENTCLIENT") },
+
 //	{ MODKEY,			XK_comma,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_period,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_forwardslash,spawn,		SHCMD("") },
@@ -195,7 +181,7 @@ static Key keys[] = {
 //	{ MODKEY,			XK_F1,		spawn,		SHCMD("") },
 // 	{ MODKEY,			XK_F2,		spawn,		SHCMD("") }, 
 //	{ MODKEY,			XK_F3,		spawn,		SHCMD("displayselect") },
-//	{ MODKEY,			XK_F5,		xrdb,		{.v = NULL } },
+	{ MODKEY,			XK_F5,		xrdb,		{.v = NULL } },
 //	{ MODKEY,			XK_F6,		spawn,		SHCMD("torwrap") },
 //	{ MODKEY,			XK_F7,		spawn,		SHCMD("td-toggle") },
 //	{ MODKEY,			XK_F8,		spawn,		SHCMD("mailsync") },

@@ -20,28 +20,6 @@
  *
  * To understand everything else, start reading main().
  */
-#include <errno.h>
-#include <locale.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <X11/cursorfont.h>
-#include <X11/keysym.h>
-#include <X11/Xatom.h>
-#include <X11/Xlib.h>
-#include <X11/Xproto.h>
-#include <X11/Xresource.h>
-#include <X11/Xutil.h>
-#ifdef XINERAMA
-#include <X11/extensions/Xinerama.h>
-#endif /* XINERAMA */
-#include <X11/Xft/Xft.h>
-
 #include "drw.h"
 #include "util.h"
 
@@ -74,14 +52,13 @@
                                     } \
                                     if (i == 7) { \
                                       strncpy(V, value.addr, 7); \
-                                      V[7] = '\0'; \
                                     } \
                                   } \
                                 }
 
+// V[7] = '\0'; \
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-//enum { SchemeNorm, SchemeSel }; /* color schemes */
 enum { SchemeNorm, SchemeSel, SchemeUrg, SchemeLast }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -1139,29 +1116,28 @@ void
 loadxrdb()
 {
   Display *display;
-  char * resm;
   XrmDatabase xrdb;
   char *type;
   XrmValue value;
+  char *resm;
 
   display = XOpenDisplay(NULL);
 
   if (display != NULL) {
-    resm = XResourceManagerString(display);
+	  resm = XResourceManagerString(display);
 
-    if (resm != NULL) {
-      xrdb = XrmGetStringDatabase(resm);
-
-      if (xrdb != NULL) {
-        XRDB_LOAD_COLOR("dwm.color0", normbordercolor);
-        XRDB_LOAD_COLOR("dwm.color8", selbordercolor);
-        XRDB_LOAD_COLOR("dwm.color0", normbgcolor);
-        XRDB_LOAD_COLOR("dwm.color6", normfgcolor);
-        XRDB_LOAD_COLOR("dwm.color0", selfgcolor);
-        XRDB_LOAD_COLOR("dwm.color14", selbgcolor);
-      }
-    }
-  }
+	  if (resm != NULL) 
+	  	xrdb = XrmGetStringDatabase(resm);
+	  else 
+	  	xrdb = XrmGetFileDatabase(hardcoded_resm);
+	  
+	  if (xrdb != NULL) {
+		XRDB_LOAD_COLOR("dwm.color8", color8);
+		XRDB_LOAD_COLOR("dwm.color0", color0);
+		XRDB_LOAD_COLOR("dwm.color15", color15);
+		XRDB_LOAD_COLOR("dwm.color1", color1);
+	  }
+}
 
   XCloseDisplay(display);
 }
@@ -1556,7 +1532,7 @@ runAutostart(void)
 	system("export _JAVA_AWT_WM_NONREPARENTING=1");
 	system("wmname LG3D &");
 	system("~/.dwm/./autostart_blocking.sh &");
-	system("~/.dwm/./autostart.sh &");
+	system("~/.dwm/./autostart.sh");
 }
 
 void
@@ -2410,8 +2386,11 @@ updatewmhints(Client *c)
 		if (c == selmon->sel && wmh->flags & XUrgencyHint) {
 			wmh->flags &= ~XUrgencyHint;
 			XSetWMHints(dpy, c->win, wmh);
-		} else
+		} else {
 			c->isurgent = (wmh->flags & XUrgencyHint) ? 1 : 0;
+			if (c->isurgent)
+				XSetWindowBorder(dpy, c->win, scheme[SchemeUrg][ColBorder].pixel);
+		}
 		if (wmh->flags & InputHint)
 			c->neverfocus = !wmh->input;
 		else
@@ -2570,6 +2549,7 @@ main(int argc, char *argv[])
 #endif /* __OpenBSD__ */
 	scan();
 	runAutostart();
+        xrdb(NULL);
 	run();
 	cleanup();
 	XCloseDisplay(dpy);

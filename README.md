@@ -6,7 +6,7 @@ Here's my build of dwm.
 
 > What are the bindings?
 
-This is suckless, mmmbud, the source code is the documentation! Check out `config.h`.
+This is suckless, the source code is the documentation! Check out `config.h`.
 
 ### Patches and features
 

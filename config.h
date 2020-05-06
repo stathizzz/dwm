@@ -18,15 +18,15 @@ static char dmenufont[]       = "monospace:size=10";
 /* input the Xresource file you want to connect dwm with */
 static const char *hardcoded_resm = "<Full path to Xresources colors file>"; //optional
 
-static char color15[] = "#000000"; //norm_fg, sel_fg, sel_border
-static char color0[] = "#ffffff"; //norm_bg
-static char color8[] = "#ffffff"; //norm_border
-static char color1[] = "#ffffff"; //sel_bg color
+static char color0[8] = "#000000\0"; //norm_border, norm_bg, sel_fg
+static char color8[8] = "#000000\0"; //sel_border
+static char color6[8] = "#000000\0"; //norm_fg 
+static char color14[8] = "#000000\0"; //sel_bg 
 
 static char *colors[][3]      = {
     /*               fg           bg         border                         */
-    [SchemeNorm] = { color15,     color0,   color8}, // unfocused wins
-    [SchemeSel]  = { color15,      color1,    color15},  // the focused win
+    [SchemeNorm] = { color6,     color0,   color0}, // unfocused wins
+    [SchemeSel]  = { color0,      color14,    color8},  // the focused win
 };
 
 
@@ -39,7 +39,6 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-//	{ "Firefox",     NULL,       NULL,       1 << 0,            0,           -1 },
 	{ "MY_WEB_BROWSER",	NULL,	 NULL,       1 << 0,            0,           -1 },
 	{ "clion",     NULL,       NULL,       1 << 1,            1,           -1 },
 	{NULL,     NULL,       "MyCMS",       1 << 2,            0,           -1 },
@@ -89,7 +88,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", color0, "-nf", color15, "-sb", color1, "-sf", color15, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", color0, "-nf", color6, "-sb", color14, "-sf", color0, NULL };
 static const char *termcmd[] = {"st", NULL};
 static const char scratchpadname[] = "Floating Panel";
 //static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "160x48", NULL };
@@ -179,8 +178,9 @@ static Key keys[] = {
 	{ MODKEY,			XK_Page_Down,	shiftview,	{ .i = 1 } },
 	{ MODKEY,			XK_Insert,	spawn,		SHCMD("notify-send \"📋 Clipboard contents:\" \"$(xclip -o -selection clipboard)\"") },
 //	{ MODKEY,			XK_F1,		spawn,		SHCMD("") },
-// 	{ MODKEY,			XK_F2,		spawn,		SHCMD("") }, 
-//	{ MODKEY,			XK_F3,		spawn,		SHCMD("displayselect") },
+ 	{ MODKEY,			XK_F2,		spawn,		SHCMD("xbacklight -dec 10") }, 
+	{ MODKEY,			XK_F3,		spawn,		SHCMD("xbacklight -inc 10") },
+	{ MODKEY,			XK_F4,		spawn,		SHCMD("") },
 	{ MODKEY,			XK_F5,		xrdb,		{.v = NULL } },
 //	{ MODKEY,			XK_F6,		spawn,		SHCMD("torwrap") },
 //	{ MODKEY,			XK_F7,		spawn,		SHCMD("td-toggle") },
@@ -188,6 +188,7 @@ static Key keys[] = {
 //	{ MODKEY,			XK_F9,		spawn,		SHCMD("dmenumount") },
 //	{ MODKEY,			XK_F10,		spawn,		SHCMD("dmenuumount") },
 //	{ MODKEY,			XK_F11,		spawn,		SHCMD("") },
+	{ MODKEY,			XK_F12,		spawn,		SHCMD("~/./toggle_wifi.sh") },
 	{ MODKEY|ControlMask|ShiftMask,	XK_F12,		quit,		{0} },
 	{ MODKEY,                       XK_space,     	setlayout,      {0} }, 
 	{ MODKEY|ShiftMask,		XK_space,	togglefloating,	{0} },
@@ -209,15 +210,22 @@ static Key keys[] = {
 	{ 0, XF86XK_AudioMedia,		spawn,		SHCMD("$TERMINAL -e ncmpcpp") },
 	{ 0, XF86XK_PowerOff,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Shutdown computer?\")\" = Yes ] && shutdown now") },
 	{ 0, XF86XK_Calculator,		spawn,		SHCMD("$TERMINAL -e $CALCULATOR -l") },
+	{ 0, XF86XK_Excel,		spawn,		SHCMD("$TERMINAL -TExcel -e ~/sc-im/./sc-im") },
+	{ 0, XF86XK_Word,		spawn,		SHCMD("$TERMINAL -TWord -e nvim") },
+	{ 0, XF86XK_Explorer,		spawn,		SHCMD("$TERMINAL -e $FILEMGR") },
+	{ 0, XF86XK_Back,		spawn,		SHCMD("notify-send 'BACK pressed'") },
+	{ 0, XF86XK_Forward,		spawn,		SHCMD("notify-send 'FORWARD pressed'") },
+//	{ 0, XF86XK_Calendar
 	{ 0, XF86XK_Sleep,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && hibernate") },
 	{ 0, XF86XK_WWW,		spawn,		SHCMD("$BROWSER") },
-	{ 0, XF86XK_DOS,		spawn,		SHCMD("$TERMINAL") },
+	{ 0, XF86XK_DOS,		spawn,		SHCMD("$TERMINAL -e emulationstation") },
 	{ 0, XF86XK_ScreenSaver,	spawn,		SHCMD("slock & xset dpms force off") },
 	{ 0, XF86XK_TaskPane,		spawn,		SHCMD("$TERMINAL -e htop") },
 	{ 0, XF86XK_Mail,		spawn,		SHCMD("$TERMINAL -e $MAILCLIENT") },
 	{ 0, XF86XK_MyComputer,		spawn,		SHCMD("$TERMINAL -e $FILEMGR /") },
-	/* { 0, XF86XK_Battery,		spawn,		SHCMD("") }, */
-	{ 0, XF86XK_Launch1,		spawn,		SHCMD("xset dpms force off") },
+	{ 0, XF86XK_Battery,		spawn,		SHCMD("") },
+	{ 0, XF86XK_Launch0,		spawn,		SHCMD("st -TLaunch0 -e vifm") },
+	{ 0, XF86XK_Launch1,		spawn,		SHCMD("virt-manager") },
 //	{ 0, XF86XK_TouchpadToggle,	spawn,		SHCMD("(synclient | grep 'TouchpadOff.*1' && synclient TouchpadOff=0) || synclient TouchpadOff=1") },
 //	{ 0, XF86XK_TouchpadOff,	spawn,		SHCMD("synclient TouchpadOff=1") },
 //	{ 0, XF86XK_TouchpadOn,		spawn,		SHCMD("synclient TouchpadOff=0") },

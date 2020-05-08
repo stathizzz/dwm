@@ -41,14 +41,8 @@ install: all
 	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
 	mkdir -p ${DESTDIR}${PREFIX}/share/dwm
-	cp -f dmenurecord ${DESTDIR}${PREFIX}/share/dwm
-	chmod 755 ${DESTDIR}${PREFIX}/share/dwm/dmenurecord
-	cp -f dmenuunicode ${DESTDIR}${PREFIX}/share/dwm
-	chmod 755 ${DESTDIR}${PREFIX}/share/dwm/dmenuunicode
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
-		${DESTDIR}${PREFIX}/share/dwm/dmenurecord\
-		${DESTDIR}${PREFIX}/share/dwm/dmenuunicode\
 		${DESTDIR}${MANPREFIX}/man1/dwm.1
 
 .PHONY: all options clean dist install uninstall

@@ -101,7 +101,7 @@ static Key keys[] = {
 	STACKKEYS(MODKEY,                          focus)
 	STACKKEYS(MODKEY|ShiftMask,                push)
 	{ MODKEY|ShiftMask,		XK_Escape,	spawn,	SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Close Xorg?\")\" = Yes ] && killall Xorg") },
-	{ MODKEY,			XK_grave,	spawn,	SHCMD("/usr/local/share/dwm/./dmenuunicode") },
+	{ MODKEY,			XK_grave,	spawn,	SHCMD("~/./dmenuunicode") },
 	TAGKEYS(			XK_1,		0)
 	TAGKEYS(			XK_2,		1)
 	TAGKEYS(			XK_3,		2)
@@ -160,9 +160,9 @@ static Key keys[] = {
 	{ MODKEY,			XK_v,		spawn,		SHCMD("$TERMINAL -e $EDITOR") },
 	{ MODKEY|ShiftMask,		XK_v,		spawn,		SHCMD("wal -i $WALLPAPER_PATH && xsetroot -name \"fsignal:xrdb\"") },
 //	{ MODKEY,       		XK_r,		spawn,		SHCMD("ffmpeg -f video4linux2 -input_format yuyv422 -video_size 1280x720 -i /dev/video0 -f alsa -i default \"/mnt/webcam_videos/$(date).mp4\"") },
-	{ MODKEY,       		XK_r,		spawn,		SHCMD("/usr/local/share/dwm/./dmenurecord") },
+	{ MODKEY,       		XK_r,		spawn,		SHCMD("~/./dmenurecord") },
 //	{ MODKEY|ShiftMask,		XK_r,		spawn,  	SHCMD("ffmpeg -y -framerate 30 -f x11grab -video_size 1920x1080 -i :0.0 -f pulse -i default \"/mnt/screen_videos/$(date).mp4\"") },
-	{ MODKEY|ShiftMask,		XK_r,		spawn,  	SHCMD("/usr/local/share/dwm/dmenurecord kill") },
+	{ MODKEY|ShiftMask,		XK_r,		spawn,  	SHCMD("~/./dmenurecord kill") },
 	{ MODKEY,			XK_b,		togglebar,	{0} },
 	{ MODKEY|ShiftMask,		XK_b,		spawn,		SHCMD("groff -mom $THESIS_PATH -Tpdf | zathura -") },
 	{ MODKEY,			XK_n,		spawn,		SHCMD("xterm -e nmtui") },

@@ -1,0 +1,195 @@
+diff --git a/config.def.h b/config.def.h
+index 8d2e6e9..30a8562 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -7,15 +7,19 @@ static const int showbar            = 1;        /* 0 means no bar */
+ static const int topbar             = 1;        /* 0 means bottom bar */
+ static const char *fonts[]          = { "monospace:size=10" };
+ static const char dmenufont[]       = "monospace:size=10";
+-static const char col_gray1[]       = "#222222";
+-static const char col_gray2[]       = "#444444";
+-static const char col_gray3[]       = "#bbbbbb";
+-static const char col_gray4[]       = "#eeeeee";
+-static const char col_cyan[]        = "#005577";
+-static const char *colors[][3]      = {
+-	/*               fg         bg         border   */
+-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
++
++/* input the Xresource file you want to connect dwm with */
++static const char *hardcoded_resm = "<Full path to Xresources colors file>"; //optional
++
++static char color0[8] = "#222222\0"; //norm_border, norm_bg, sel_fg
++static char color8[8] = "#454545\0"; //sel_border
++static char color6[8] = "#343434\0"; //norm_fg 
++static char color14[8] = "#dedede\0"; //sel_bg 
++
++static char *colors[][3]      = {
++    /*               fg           bg         border                         */
++    [SchemeNorm] = { color6,     color0,   color0}, // unfocused wins
++    [SchemeSel]  = { color0,      color14,    color8},  // the focused win
+ };
+ 
+ /* tagging */
+@@ -56,7 +60,7 @@ static const Layout layouts[] = {
+ 
+ /* commands */
+ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
+-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
++static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", color0, "-nf", color6, "-sb", color14, "-sf", color0, NULL };
+ static const char *termcmd[]  = { "st", NULL };
+ 
+ static Key keys[] = {
+@@ -119,4 +123,5 @@ static Button buttons[] = {
+ static Signal signals[] = {
+ 	/* signum       function        argument  */
+ 	{ 1,            setlayout,      {.v = 0} },
++	{ 2,            xrdb,      	{.v = 0} },
+ };
+diff --git a/drw.c b/drw.c
+index 8fd1ca4..e4968a0 100644
+--- a/drw.c
++++ b/drw.c
+@@ -207,7 +207,7 @@ drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
+ /* Wrapper to create color schemes. The caller has to call free(3) on the
+  * returned color scheme when done using it. */
+ Clr *
+-drw_scm_create(Drw *drw, const char *clrnames[], size_t clrcount)
++drw_scm_create(Drw *drw, char *clrnames[], size_t clrcount)
+ {
+ 	size_t i;
+ 	Clr *ret;
+diff --git a/drw.h b/drw.h
+index 4bcd5ad..42b04ce 100644
+--- a/drw.h
++++ b/drw.h
+@@ -39,7 +39,7 @@ void drw_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned in
+ 
+ /* Colorscheme abstraction */
+ void drw_clr_create(Drw *drw, Clr *dest, const char *clrname);
+-Clr *drw_scm_create(Drw *drw, const char *clrnames[], size_t clrcount);
++Clr *drw_scm_create(Drw *drw, char *clrnames[], size_t clrcount);
+ 
+ /* Cursor abstraction */
+ Cur *drw_cur_create(Drw *drw, int shape);
+diff --git a/dwm.c b/dwm.c
+index ed2d463..abc12ea 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -35,6 +35,7 @@
+ #include <X11/Xatom.h>
+ #include <X11/Xlib.h>
+ #include <X11/Xproto.h>
++#include <X11/Xresource.h>
+ #include <X11/Xutil.h>
+ #ifdef XINERAMA
+ #include <X11/extensions/Xinerama.h>
+@@ -56,7 +57,20 @@
+ #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
+ #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
+ #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
+-
++#define XRDB_LOAD_COLOR(R,V)    if (XrmGetResource(xrdb, R, NULL, &type, &value) == True) { \
++                                  if (value.addr != NULL && strnlen(value.addr, 8) == 7 && value.addr[0] == '#') { \
++                                    int i = 1; \
++                                    for (; i <= 6; i++) { \
++                                      if (value.addr[i] < 48) break; \
++                                      if (value.addr[i] > 57 && value.addr[i] < 65) break; \
++                                      if (value.addr[i] > 70 && value.addr[i] < 97) break; \
++                                      if (value.addr[i] > 102) break; \
++                                    } \
++                                    if (i == 7) { \
++                                      strncpy(V, value.addr, 7); \
++                                    } \
++                                  } \
++                                }
+ /* enums */
+ enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
+ enum { SchemeNorm, SchemeSel }; /* color schemes */
+@@ -185,6 +199,7 @@ static void incnmaster(const Arg *arg);
+ static void keypress(XEvent *e);
+ static int fake_signal(void);
+ static void killclient(const Arg *arg);
++static void loadxrdb(void);
+ static void manage(Window w, XWindowAttributes *wa);
+ static void mappingnotify(XEvent *e);
+ static void maprequest(XEvent *e);
+@@ -240,6 +255,7 @@ static Monitor *wintomon(Window w);
+ static int xerror(Display *dpy, XErrorEvent *ee);
+ static int xerrordummy(Display *dpy, XErrorEvent *ee);
+ static int xerrorstart(Display *dpy, XErrorEvent *ee);
++static void xrdb(const Arg *arg);
+ static void zoom(const Arg *arg);
+ 
+ /* variables */
+@@ -1063,6 +1079,36 @@ killclient(const Arg *arg)
+ 	}
+ }
+ 
++void
++loadxrdb()
++{
++  Display *display;
++  XrmDatabase xrdb;
++  char *type;
++  XrmValue value;
++  char *resm;
++
++  display = XOpenDisplay(NULL);
++
++  if (display != NULL) {
++	  resm = XResourceManagerString(display);
++
++	  if (resm != NULL) 
++	  	xrdb = XrmGetStringDatabase(resm);
++	  else 
++	  	xrdb = XrmGetFileDatabase(hardcoded_resm);
++	  
++	  if (xrdb != NULL) {
++		XRDB_LOAD_COLOR("dwm.color0", color0);
++		XRDB_LOAD_COLOR("dwm.color6", color6);
++		XRDB_LOAD_COLOR("dwm.color8", color8);
++		XRDB_LOAD_COLOR("dwm.color14", color14);
++	  }
++  }
++
++  XCloseDisplay(display);
++}
++
+ void
+ manage(Window w, XWindowAttributes *wa)
+ {
+@@ -2163,6 +2209,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
+ 	return -1;
+ }
+ 
++void
++xrdb(const Arg *arg)
++{
++  loadxrdb();
++  int i;
++  for (i = 0; i < LENGTH(colors); i++)
++                scheme[i] = drw_scm_create(drw, colors[i], 3);
++  focus(NULL);
++  arrange(NULL);
++}
++
+ void
+ zoom(const Arg *arg)
+ {
+@@ -2189,12 +2246,15 @@ main(int argc, char *argv[])
+ 	if (!(dpy = XOpenDisplay(NULL)))
+ 		die("dwm: cannot open display");
+ 	checkotherwm();
++        XrmInitialize();
++        loadxrdb();
+ 	setup();
+ #ifdef __OpenBSD__
+ 	if (pledge("stdio rpath proc exec", NULL) == -1)
+ 		die("pledge");
+ #endif /* __OpenBSD__ */
+ 	scan();
++        xrdb(NULL);
+ 	run();
+ 	cleanup();
+ 	XCloseDisplay(dpy);

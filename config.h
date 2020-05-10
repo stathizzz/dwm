@@ -142,6 +142,7 @@ static Key keys[] = {
 	{ MODKEY,			XK_d,		spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,		XK_d,		togglegaps,	{0} },
 	{ MODKEY,			XK_f,		togglefullscr,	{0} },
+	{ MODKEY|ShiftMask,		XK_f,		spawn,		SHCMD("$TERMINAL -e $FILEMGR") },
 	{ MODKEY,			XK_g,		shiftview,	{ .i = -1 } },
 	{ MODKEY,			XK_h,		setmfact,	{.f = -0.05} },
 	{ MODKEY|ShiftMask,		XK_h,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && systemctl hibernate") },
@@ -168,8 +169,7 @@ static Key keys[] = {
 	{ MODKEY,			XK_n,		spawn,		SHCMD("xterm -e nmtui") },
 	{ MODKEY|ShiftMask,		XK_n,		spawn,		SHCMD("$TERMINAL -e watch -n4 \"echo LAST && last -a |grep 'logged in' && echo WHO && who && echo W && w\"") },
 	
-	{ MODKEY,			XK_m,		spawn,		SHCMD("$TERMINAL -e $FILEMGR") },
-	{ MODKEY|ShiftMask,		XK_m,		spawn,		SHCMD("$TORRENTCLIENT") },
+	{ MODKEY,			XK_m,		spawn,		SHCMD("$TORRENTCLIENT") },
 
 //	{ MODKEY,			XK_comma,	spawn,		SHCMD("") },
 //	{ MODKEY,			XK_period,	spawn,		SHCMD("") },
